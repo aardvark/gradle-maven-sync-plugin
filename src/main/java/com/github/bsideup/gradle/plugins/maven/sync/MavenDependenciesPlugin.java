@@ -27,7 +27,14 @@ public class MavenDependenciesPlugin implements Plugin<Project> {
       return;
     }
 
-    val model = MODELS.computeIfAbsent(project.getRootProject(), EffectiveModelBuilder.INSTANCE);
+    String mavenBinaryName;
+    if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+      mavenBinaryName = "mvn.cmd";
+    } else {
+      mavenBinaryName = "mvn";
+    }
+
+    val model = MODELS.computeIfAbsent(project.getRootProject(), new EffectiveModelBuilder(mavenBinaryName));
     for (val dependency : model.get(coordinates.get())) {
       dependency.accept(project);
     }

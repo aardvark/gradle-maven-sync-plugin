@@ -26,8 +26,12 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toMap;
 
-public enum EffectiveModelBuilder implements Function<Project, Map<MavenCoordinates, Set<Consumer<Project>>>> {
-  INSTANCE;
+public class EffectiveModelBuilder implements Function<Project, Map<MavenCoordinates, Set<Consumer<Project>>>> {
+  public final String mavenBinaryName;
+
+  public EffectiveModelBuilder(String mavenBinaryName) {
+    this.mavenBinaryName = mavenBinaryName;
+  }
 
   @Override
   @SneakyThrows
@@ -42,7 +46,7 @@ public enum EffectiveModelBuilder implements Function<Project, Map<MavenCoordina
 
     try {
       // TODO Maven Wrapper support
-      new ProcessExecutor("mvn", "-q", "help:effective-pom", "-Doutput=" + tempFile.toAbsolutePath().toString())
+      new ProcessExecutor(mavenBinaryName, "-q", "help:effective-pom", "-Doutput=\"" + tempFile.toAbsolutePath().toString() + "\"")
           .directory(rootProject.getRootDir())
           .exitValueNormal()
           .readOutput(true)
